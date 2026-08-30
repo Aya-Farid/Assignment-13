@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kanban Board | Task Manager</title>
+    <link
+      rel="stylesheet"
+      href="./node_modules/@fortawesome/fontawesome-free/css/all.min.css"
+    />
+    <link rel="stylesheet" href="./dist/output.css" />
+    <link rel="stylesheet" href="./src/css/style.css" />
+  </head>
+  <body class="bg-slate-50">
+    <!-- tsc index.ts --watch //// ctrl + s-->
+    <!-- npx @tailwindcss/cli -i ./src/css/input.css -o ./dist/output.css --watch -->
+
+    <header
+      class="h-17.5 bg-linear-to-r from-indigo-600 via-violet-600 to-purple-600 shadow-md"
+    >
+      <div
+        class="mx-auto flex h-full container items-center justify-between px-6 md:px-10 lg:px-12"
+      >
+        <!-- logo -->
+        <div class="flex items-center gap-3">
+          <i class="fa-solid fa-table-columns text-2xl text-white"></i>
+
+          <h1 class="text-[26px] font-bold tracking-tight text-white">
+            Kanban
+          </h1>
+        </div>
+
+        <!-- add btn -->
+        <button
+          type="button"
+          id="add-task-btn"
+          class="flex h-12 w-12 items-center justify-center rounded-xl bg-white/15 text-white transition hover:bg-white/25"
+          aria-label="Add task"
+        >
+          <i class="fa-solid fa-plus text-xl"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Section -->
+
+    <main class="mx-auto container px-6 py-5 md:px-10 lg:px-12">
+      <section class="grid grid-cols-1 gap-7 lg:grid-cols-3">
+        <!--  TO DO  -->
+
+        <div
+          class="flex min-h-125 flex-col rounded-xl border border-slate-100 bg-white shadow-sm"
+        >
+          <!-- Column Header -->
+          <div class="flex items-center gap-4 p-6">
+            <div
+              class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-500"
+            >
+              <i class="fa-solid fa-clipboard-list text-lg text-slate-500"></i>
+            </div>
+
+            <div>
+              <h2 class="text-[18px] font-semibold text-slate-800">To Do</h2>
+
+              <p id="todo-count" class="text-[12px] text-slate-400">0 tasks</p>
+            </div>
+          </div>
+
+          <!-- Tasks List Container -->
+          <div
+            id="tasks-todo"
+            class="flex flex-col gap-4 overflow-y-auto px-4 pb-4"
+          >
+            <!-- Task Card -->
+          </div>
+        </div>
+
+        <!--  IN PROGRESS  -->
+
+        <div
+          class="flex min-h-125 flex-col rounded-xl border border-slate-100 bg-white shadow-sm"
+        >
+          <!-- Column Header -->
+
+          <div class="flex items-center gap-4 p-6">
+            <div
+              class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-amber-50"
+            >
+              <i class="fa-solid fa-spinner text-xl text-amber-500"></i>
+            </div>
+
+            <div>
+              <h2 class="text-[18px] font-semibold text-slate-800">
+                In Progress
+              </h2>
+
+              <p id="inprogress-Count" class="text-[12px] text-slate-400">
+                0 tasks
+              </p>
+            </div>
+          </div>
+
+          <!-- Empty?? -->
+
+          <div
+            id="tasks-in-progress"
+            class="flex flex-col gap-4 overflow-y-auto px-4 pb-4"
+          >
+            <!-- Task Card -->
+          </div>
+        </div>
+
+        <!--  COMPLETED  -->
+
+        <div
+          class="flex min-h-125 flex-col rounded-xl border border-slate-100 bg-white shadow-sm"
+        >
+          <!-- Column Header -->
+
+          <div class="flex items-center gap-4 p-6">
+            <div
+              class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-emerald-50"
+            >
+              <i class="fa-solid fa-circle-check text-xl text-emerald-500"></i>
+            </div>
+
+            <div>
+              <h2 class="text-[18px] font-semibold text-slate-800">
+                Completed
+              </h2>
+
+              <p id="Completed-Count" class="text-[12px] text-slate-400">
+                0 tasks
+              </p>
+            </div>
+          </div>
+
+          <div
+            id="tasks-completed"
+            class="flex flex-col gap-4 overflow-y-auto px-4 pb-4"
+          >
+            <!-- Task Card -->
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!--  ADD TASK MODAL  -->
+
+    <div
+      id="task-modal"
+      class="hidden fixed inset-0 z-50 items-center justify-center bg-slate-900/50 px-4 py-6"
+    >
+      <div
+        class="w-full max-w-xl max-h-[70vh] overflow-y-auto rounded-2xl bg-white shadow-2xl scrollbar-none [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+      >
+        <!--  MODAL HEADER  -->
+
+        <div
+          class="flex items-center justify-between border-b border-slate-200 px-7 py-6"
+        >
+          <h2 class="text-[18px] font-bold tracking-tight text-slate-800">
+            Create New Task
+          </h2>
+
+          <button
+            type="button"
+            id="close-modal-btn"
+            class="flex h-8 w-8 items-center justify-center text-slate-400 transition hover:bg-slate-100 hover:text-slate-600"
+            aria-label="Close modal"
+          >
+            <i class="fa-solid fa-xmark text-xl"></i>
+          </button>
+        </div>
+
+        <!--  FORM  -->
+
+        <form id="task-form" class="space-y-6 px-7 py-7">
+          <!--  TASK TITLE  -->
+
+          <div>
+            <label
+              for="task-title"
+              class="mb-3 flex items-center gap-3 text-[15px] font-medium text-slate-700"
+            >
+              <i class="fa-solid fa-heading text-lg text-slate-400"></i>
+
+              <span> Task Title </span>
+
+              <span class="text-red-500"> * </span>
+            </label>
+
+            <input
+              id="task-title"
+              name="title"
+              type="text"
+              required
+              placeholder="What needs to be done?"
+              class="h-12 w-full rounded-xl border-2 border-slate-200 bg-white px-5 font-semibold text-[15px] text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10"
+            />
+          </div>
+
+          <!--  Priority  & Due Date  -->
+
+          <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+            <!-- PRIORITY -->
+
+            <div>
+              <label
+                for="task-priority"
+                class="mb-3 flex items-center gap-3 text-[15px] font-semibold text-slate-700"
+              >
+                <i class="fa-solid fa-flag text-slate-400"></i>
+
+                <span> Priority </span>
+              </label>
+
+              <div class="relative">
+                <select
+                  id="task-priority"
+                  name="priority"
+                  class="h-12 w-full appearance-none rounded-xl border-2 border-slate-200 bg-white px-5 pr-12 text-[15px] text-slate-700 outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10"
+                >
+                  <option value="low">Low</option>
+
+                  <option value="medium" selected>Medium</option>
+
+                  <option value="high">High</option>
+                </select>
+
+                <i
+                  class="fa-solid fa-chevron-down absolute right-5 top-1/2 -translate-y-1/2 text-slate-600"
+                ></i>
+              </div>
+            </div>
+
+            <!-- DUE DATE -->
+
+            <div>
+              <label
+                for="task-date"
+                class="mb-3 flex items-center gap-3 text-[15px] font-medium text-slate-700"
+              >
+                <i class="fa-regular fa-calendar text-slate-400"></i>
+
+                <span> Due Date </span>
+              </label>
+
+              <div>
+                <input
+                  id="task-due-date"
+                  name="dueDate"
+                  type="date"
+                  class="h-12 w-full appearance-none rounded-xl border-2 border-slate-200 bg-white px-5 text-[15px] text-slate-700 outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10"
+                />
+              </div>
+            </div>
+          </div>
+
+          <!--  DESCRIPTION  -->
+
+          <div>
+            <label
+              for="task-description"
+              class="mb-3 flex items-center gap-3 text-[15px] font-semibold text-slate-700"
+            >
+              <i class="fa-solid fa-align-left text-slate-400"></i>
+
+              <span> Description </span>
+            </label>
+
+            <textarea
+              id="task-description"
+              name="description"
+              maxlength="500"
+              placeholder="Add more details about this task..."
+              class="w-full resize-none rounded-xl border-2 border-slate-200 bg-white px-5 py-4 text-[15px] leading-7 font-semibold text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10"
+            ></textarea>
+
+            <div class="mt-2 flex justify-end">
+              <span id="description-counter" class="text-[12px] text-slate-400">
+                0/500
+              </span>
+            </div>
+          </div>
+
+          <!--  ACTIONS BTN s  -->
+
+          <div class="grid grid-cols-2 gap-4 pt-1">
+            <!-- Cancel -->
+
+            <button
+              type="button"
+              id="cancel-modal-btn"
+              class="h-10 rounded-xl bg-slate-100 text-[15px] font-medium text-slate-700 transition hover:bg-slate-200"
+            >
+              Cancel
+            </button>
+
+            <!-- Add Task -->
+
+            <button
+              type="button"
+              id="submit-btn"
+              class="flex h-10 items-center justify-center gap-3 rounded-xl bg-linear-to-r from-indigo-600 to-purple-600 text-[18px] font-medium text-white shadow-sm transition hover:from-indigo-700 hover:to-purple-700"
+            >
+              <i class="fa-solid fa-plus text-white"></i>
+
+              <span> Add Task </span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script src="./index.js"></script>
+  </body>
+</html>
